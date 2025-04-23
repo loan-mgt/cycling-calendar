@@ -1,199 +1,136 @@
-<!DOCTYPE html>
-<html lang="fr">
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Cycling Calendar</title>
+        <meta
+            name="description"
+            content="Sync your cycling calendar with your personal calendar"
+        />
+        <meta name="keywords" content="calendar, ics, CPE, apple, google" />
+        <meta name="author" content="https://github.com/loan-mgt" />
+        <meta property="og:title" content="Cycling Calendar" />
+        <meta
+            property="og:description"
+            content="Sync your cycling calendar with your personal calendar"
+        />
+        <meta property="og:image" content="/static/banner.png" />
+        <meta property="og:url" content="https://cpe-cal.for-loop.fr" />
+        <meta property="og:type" content="website" />
+        <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+        <link rel="stylesheet" href="/static/styles.css" />
+    </head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendrier CPE</title>
-    <meta name="description" content="Synchronisez votre calendrier CPE avec votre calendrier personnel">
-    <meta name="keywords" content="calendrier, ics, CPE, apple, google">
-    <meta name="author" content="https://github.com/loan-mgt">
-    <meta property="og:title" content="Calendrier CPE">
-    <meta property="og:description" content="Synchronisez votre calendrier CPE avec votre calendrier personnel">
-    <meta property="og:image" content="/static/banner.png">
-    <meta property="og:url" content="https://cpe-cal.for-loop.fr">
-    <meta property="og:type" content="website">
-    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="/static/styles.css">
-</head>
+    <body>
+        <header>
+            <nav>
+                <img src="/static/logo.svg" />
 
-<body>
-    <header>
-        <nav>
-            <img src="/static/logo.svg">
+                <ul class="pc-nav">
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#trust">Trust</a></li>
+                    <li><a href="#affiliation">Affiliation</a></li>
+                </ul>
+                <ul>
+                    <li>
+                        <a href="https://github.com/loan-mgt/cycling-calendar"
+                            >Source Code</a
+                        >
+                    </li>
+                    <li>
+                        <a class="btn-secondary" href="#get-calendar"
+                            >Get URL</a
+                        >
+                    </li>
+                </ul>
+            </nav>
+        </header>
 
-            <ul class="pc-nav">
-                <li><a href="#about">À propos</a></li>
-                <li><a href="#trust">Confiance</a></li>
-                <li><a href="#affiliation">Affiliation</a></li>
-            </ul>
-            <ul>
-                <li><a href="https://github.com/loan-mgt/cpe-calendar">Code Source</a></li>
-                <li><a class="btn-secondary" href="#get-calendar">Obtenir l'URL</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <main>
-        <section class="hero">
-            <h1>Synchronisez votre calendrier CPE avec votre téléphone</h1>
-            <p>Restez informé de tout changement d'emploi du temps sans effort et accédez facilement à votre prochaine salle de cours</p>
-            <a href="#get-calendar" class="btn-hero">
-                <img src="/static/logo.svg">
-                <span>Obtenez votre calendrier</span></a>
-        </section>
-
-        <section id="get-calendar" class="get-calendar">
-            <h2>Obtenez votre calendrier</h2>
-            <form>
-                <div class="form-row">
-                    <label for="email">Email CPE</label>
-                    <input type="email" id="email" name="email" placeholder="Votre email CPE" required>
-                </div>
-                <div class="form-row">
-                    <label for="password">Mot de passe</label>
-                    <input type="password" id="password" name="password" placeholder="Votre mot de passe CPE" required>
-                </div>
-                <button class="btn-primary" onclick="generateEncryptedLink(event)">
-                 <svg style="display: none;" id="loader" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><path fill="#ADC3C1" stroke="#ADC3C1" stroke-width="15" transform-origin="center" d="m148 84.7 13.8-8-10-17.3-13.8 8a50 50 0 0 0-27.4-15.9v-16h-20v16A50 50 0 0 0 63 67.4l-13.8-8-10 17.3 13.8 8a50 50 0 0 0 0 31.7l-13.8 8 10 17.3 13.8-8a50 50 0 0 0 27.5 15.9v16h20v-16a50 50 0 0 0 27.4-15.9l13.8 8 10-17.3-13.8-8a50 50 0 0 0 0-31.7Zm-47.5 50.8a35 35 0 1 1 0-70 35 35 0 0 1 0 70Z"><animateTransform type="rotate" attributeName="transform" calcMode="spline" dur="2" values="0;120" keyTimes="0;1" keySplines="0 0 1 1" repeatCount="indefinite"></animateTransform></path></svg>
-                    <span>Obtenez votre calendrier</span> 
+        <main>
+            <section class="hero">
+                <h1>Sync your cycling calendar with your phone</h1>
+                <p>
+                    Stay informed of any schedule changes effortlessly and
+                    easily access your next classroom
+                </p>
+                <button onclick="copyLink()" class="btn-primary btn-hero">
+                    <img src="/static/logo.svg" />
+                    <span>Get your calendar</span>
                 </button>
-            </form>
-            <div id="success">
-                <p>Votre lien de connexion est <b>copié</b> dans le presse-papier.</p>
-                <button class="btn-primary" onclick="copyLink()">Copier le lien</button>
-                <button class="btn-secondary" onclick="back()">Retour</button>
+            </section>
+
+            <section id="about" class="about">
+                <h2>About</h2>
+                <p>
+                    The goal of the Cycling Calendar is to provide every student
+                    with simple and effortless access to their schedule by
+                    connecting their school calendar to their personal calendar.
+                    It works on all devices—phone, computer, laptop— and with
+                    any type of device, including Apple and Android.
+                </p>
+                <p>
+                    The calendar will automatically update on your device every
+                    hour, allowing you to stay informed of any schedule changes.
+                </p>
+                <p>
+                    This project is open-source. If at any time you notice a
+                    problem or a missing feature, feel free to contact us and
+                    share it on GitHub.
+                </p>
+            </section>
+
+            <section id="affiliation" class="affiliation">
+                <h2>Affiliation</h2>
+                <p>
+                    This project is entirely independent and is not affiliated
+                    with any school or organization.
+                </p>
+            </section>
+        </main>
+
+        <footer>
+            <div>
+                <p>Cycling Calendar</p>
+                <a
+                    class="btn-secondary"
+                    href="https://github.com/loan-mgt/cycling-calendar"
+                    >Source Code</a
+                >
             </div>
-        </section>
+        </footer>
+        <div id="toast">Link copied to clipboard!</div>
+        <script src="/static/encryption.js"></script>
+        <script>
+            let url = window.location.origin + "/cycling-calendar.ics";
 
-        <section id="about" class="about">
-            <h2>À propos</h2>
-            <p>L'objectif du Calendrier CPE est d'offrir à chaque étudiant un accès simple et sans effort à leur
-                calendrier en connectant leur calendrier scolaire à leur calendrier personnel. Cela fonctionne sur tous
-                les appareils téléphone, ordinateur, portable, et avec n'importe quel type d'appareil, y compris Apple et
-                Android.</p>
-            <p>Le calendrier se mettra automatiquement à jour sur votre appareil toutes les heures, vous permettant de
-                rester informé de tout changement d'emploi du temps.</p>
-            <p>Ce projet est open-source. Si à tout moment vous constatez un problème ou une fonctionnalité manquante,
-                n'hésitez pas à nous contacter et à partager cela sur GitHub.</p>
-        </section>
-
-        <section id="trust" class="trust">
-            <h2>Confiance</h2>
-            <p>Comme pour tous les projets hébergés open-source, il n'y a aucune garantie que le propriétaire de
-                l'instance n'ait pas altéré le code. Cela signifie qu'il y aura toujours un certain niveau de
-                confiance nécessaire.</p>
-            <p>Voici quelques recommandations et bonnes pratiques en fonction de votre niveau de confiance ou du risque
-                que vous êtes prêt à accepter :</p>
-            <ol>
-                <li>Pleine confiance : Utilisez le service tel quel.</li>
-                <li>Quelques doutes : Limitez l'impact des problèmes potentiels en prenant des précautions, comme créer
-                    un mot de passe dédié pour le service.</li>
-                <li>Aucun risque tolérer : Comme il s'agit d'un projet open-source, vous pouvez héberger votre propre instance.
-                    Un guide est disponible <a href="https://github.com/loan-mgt/cpe-calendar">ici</a>.</li>
-            </ol>
-        </section>
-
-        <section id="affiliation" class="affiliation">
-            <h2>Affiliation</h2>
-            <p>Ce projet est entièrement indépendant et n'est affilié à aucune école ou organisation.</p>
-        </section>
-    </main>
-
-    <footer>
-        <div>
-            <p>Calendrier 3 16 5 | 2024</p>
-            <a class="btn-secondary" href="https://github.com/loan-mgt/cpe-calendar">Code Source</a>
-        </div>
-    </footer>
-    <div id="toast">Link copied to clipboard!</div>
-<script src="/static/encryption.js"></script>
-<script >
-    const pemEncodedKey = `{{.PublicKey}}`;
-    const separator = `{{.Separator}}`;
-    let url = '';
-
-    
-function copyLink() {
-    const fullLink = `${window.location.origin}${url}`;
-    navigator.clipboard.writeText(fullLink).then(() => {
-        showToast('success', 'Lien copié avec succès!');
-    }).catch(err => {
-        console.error('Failed to copy text: ', err);
-    });
-}
-
-
-    async function generateEncryptedLink(event) {
-        event.preventDefault();
-        document.querySelector("#loader").style.display = "block";
-        try {
-            const username = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-
-            if (!username || !password) {
-                showToast('error', 'Veuillez remplir tous les champs');
-                return;
+            function copyLink() {
+                navigator.clipboard
+                    .writeText(url)
+                    .then(() => {
+                        showToast("success", "Link copied successfully!");
+                    })
+                    .catch((err) => {
+                        console.error("Failed to copy text: ", err);
+                    });
             }
 
-            const encryptedCreds = await encryptMessage(`${username}${separator}${password}`);
-            if (!encryptedCreds) throw new Error('Encryption failed');
+            function showToast(type, message) {
+                const toast = document.getElementById("toast");
+                toast.innerText = message;
+                if (type === "error") {
+                    toast.classList.add("error");
+                    toast.classList.remove("success");
+                } else if (type === "success") {
+                    toast.classList.add("success");
+                    toast.classList.remove("error");
+                }
 
-            // validate creds
-
-            res = await fetch(`/validate?creds=${encodeURIComponent(encryptedCreds)}`);
-            
-            console.log(res.ok);
-
-            if (!res.ok) {
-                showToast('error', 'Credentiel invalide');
-                console.log('Error validating creds:', res.statusText);
-            document.querySelector("#loader").style.display = "none";
-
-                return;
+                toast.classList.add("show");
+                setTimeout(() => {
+                    toast.className = toast.className.replace("show", "");
+                }, 3000);
             }
-
-             url = `/your-cpe-calendar.ics?creds=${encodeURIComponent(encryptedCreds)}`;
-            copyLink();
-
-            document.querySelector("form").style.display = "none";
-            document.querySelector("#success").style.display = "flex";
-            document.querySelector("#loader").style.display = "none";
-        } catch (error) {
-            console.error('Error generating encrypted link:', error);
-            document.querySelector("#loader").style.display = "none";
-        }
-        document.querySelector("#loader").style.display = "none";
-        return false
-    }
-
-    function back() {
-        document.querySelector("form").style.display = "flex";
-        document.querySelector("#success").style.display = "none";
-    }
-
-    function showToast(type, message) {
-    const toast = document.getElementById('toast');
-    toast.innerText = message;
-    if (type === 'error') {
-        toast.classList.add('error');
-        toast.classList.remove('success');
-    } else if (type === 'success') {
-        toast.classList.add('success');
-        toast.classList.remove('error');
-    }
-
-    toast.classList.add('show');
-    setTimeout(() => {
-        toast.className = toast.className.replace('show', '');
-    }, 3000);
-}
-
-importPublicKey(pemEncodedKey).then(key => {
-    encryptionKey = key;
-});
-
-</script>
-</body>
-
+        </script>
+    </body>
 </html>

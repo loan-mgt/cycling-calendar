@@ -6,9 +6,7 @@ import (
 	"cpe/calendar/metrics"
 	"html/template"
 	"net/http"
-	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
@@ -62,26 +60,8 @@ func main() {
 
 // serveIndex renders the index.html Go template with environment variables
 func serveIndex(w http.ResponseWriter, r *http.Request) {
-	publicKey, err := os.ReadFile(filepath.Join("static", "public.pem"))
-	if err != nil {
-		// Log error if public key can't be read
-		logger.Log.Error().Err(err).Msg("Error reading public.pem")
-		http.Error(w, "Error reading public key", http.StatusInternalServerError)
-		return
-	}
 
-	publicKey = []byte(strings.ReplaceAll(string(publicKey), "\n", ""))
-	separator := os.Getenv("SEPARATOR")
-
-	data := struct {
-		PublicKey string
-		Separator string
-	}{
-		PublicKey: string(publicKey),
-		Separator: separator,
-	}
-
-	if err := tpl.Execute(w, data); err != nil {
+	if err := tpl.Execute(w, nil); err != nil {
 		// Log error if template rendering fails
 		logger.Log.Error().Err(err).Msg("Error rendering template")
 		http.Error(w, "Error rendering template", http.StatusInternalServerError)

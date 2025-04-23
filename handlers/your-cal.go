@@ -28,7 +28,7 @@ func GenerateICSHandler(w http.ResponseWriter, r *http.Request) {
 	calendarName := "Cycling Calendar"
 
 	// Fetch data from the source
-	events, err := request.FetchData(timezone)
+	events, err := request.GetInfo(timezone)
 	if err != nil {
 		logger.Log.Error().
 			Err(err).

@@ -25,36 +25,26 @@ func GenerateICS(events []types.Event, calendarName string) string {
 	// Loop over each event and generate the calendar content
 	for _, event := range events {
 
-		if event.Favori == nil {
-			// Log skipped events due to missing Favori field
-			logger.Log.Warn().
-				Str("eventID", fmt.Sprintf("%v", event.ID)).
-				Msg("Skipping event due to missing Favori data")
-			continue
-		}
-
-		// Extract components from regex matches
-		location := event.Favori.F2
-		summary := event.Favori.F5 + event.Favori.F3
-		description := event.Favori.F4
+		summary := event.Title
+		description := event.Stage
 
 		// Parse the start and end times in the given time zone
-		start, err := time.Parse(layout, event.DateDebut)
+		start, err := time.Parse(layout, event.StartTime)
 		if err != nil {
 			logger.Log.Error().
 				Err(err).
-				Int64("eventID", *event.ID).
-				Str("startDate", event.DateDebut).
+				Str("StartTime", event.StartTime).
+				Str("Date", event.Date).
 				Msg("Error parsing start time")
 			continue
 		}
 
-		end, err := time.Parse(layout, event.DateFin)
+		end, err := time.Parse(layout, event.EndTime)
 		if err != nil {
 			logger.Log.Error().
 				Err(err).
-				Int64("eventID", *event.ID).
-				Str("endDate", event.DateFin).
+				Str("EndTime", event.EndTime).
+				Str("Date", event.Date).
 				Msg("Error parsing end time")
 			continue
 		}
@@ -73,7 +63,6 @@ func GenerateICS(events []types.Event, calendarName string) string {
 
 		// Log event details
 		logger.Log.Info().
-			Int64("eventID", *event.ID).
 			Str("summary", summary).
 			Str("start", start.String()).
 			Str("startUTC", start.UTC().String()).
@@ -82,10 +71,9 @@ func GenerateICS(events []types.Event, calendarName string) string {
 
 		// Add event details to ICS string
 		ics += "BEGIN:VEVENT\n"
-		ics += fmt.Sprintf("UID:%d\n", event.ID)
+		ics += fmt.Sprintf("UID:%s%s\n", event.Title, event.Stage)
 		ics += fmt.Sprintf("DTSTART:%s\n", start.Format("20060102T150405Z"))
 		ics += fmt.Sprintf("DTEND:%s\n", end.Format("20060102T150405Z"))
-		ics += fmt.Sprintf("LOCATION:%s\n", location)
 		ics += fmt.Sprintf("SUMMARY:%s\n", summary)
 		ics += fmt.Sprintf("DESCRIPTION:%s\n", description)
 		ics += "END:VEVENT\n"
