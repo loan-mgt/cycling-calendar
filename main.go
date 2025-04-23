@@ -46,10 +46,7 @@ func main() {
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
 
 	// Serve calendar.ics route
-	r.HandleFunc("/your-cpe-calendar.ics", handlers.GenerateICSHandler).Methods("GET")
-
-	//validate route
-	r.HandleFunc("/validate", handlers.ValidateHandler).Methods("GET")
+	r.HandleFunc("/cycling-calendar.ics", handlers.GenerateICSHandler).Methods("GET")
 
 	// check app health
 	r.HandleFunc("/health", handlers.Health).Methods("GET")

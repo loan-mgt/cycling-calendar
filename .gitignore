@@ -1,4 +1,1 @@
 .env
-secret/private.pem
-secret/*
-static/public.pem

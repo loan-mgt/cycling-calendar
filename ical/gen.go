@@ -12,11 +12,11 @@ func GenerateICS(events []types.Event, calendarName string) string {
 	// Start building the ICS string
 	ics := "BEGIN:VCALENDAR\n"
 	ics += "VERSION:2.0\n"
-	ics += "PRODID:-//github.com/qypol342 //CPE Calendar//EN\n"
+	ics += "PRODID:-//github.com/qypol342 //Cycling Calendar//EN\n"
 	ics += fmt.Sprintf("NAME:%s\n", calendarName)
 	ics += fmt.Sprintf("X-WR-CALNAME:%s\n", calendarName)
-	ics += fmt.Sprintf("Description:%s: %s\n", "CPE Calendar", calendarName)
-	ics += fmt.Sprintf("X-WR-CALDESC:%s: %s\n", "CPE Calendar", calendarName)
+	ics += fmt.Sprintf("Description:%s: %s\n", "Cycling Calendar", calendarName)
+	ics += fmt.Sprintf("X-WR-CALDESC:%s: %s\n", "Cycling Calendar", calendarName)
 	ics += "REFRESH-INTERVAL;VALUE=DURATION:PT1H\n"
 
 	// Define the layout for parsing the datetime with a timezone offset

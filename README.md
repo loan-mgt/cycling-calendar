@@ -1,9 +1,9 @@
 <div align="center">
-  <img width=200 alt="logo cpe-calendar" src="/static/favicon.svg">
+  <img width=200 alt="logo cycling-calendar" src="/static/favicon.svg">
 
-  # CPE calendar
+  # Cycling calendar
 
-  Sync your CPE calendar with your personal one.
+  Never miss a cycling race again.
 
 </div>
 
@@ -18,19 +18,13 @@ The calendar automatically updates every hour, keeping you informed of any sched
 1. The first step is to set up your own `.env` file. Use `example.env` as a reference.
 2. Then run the production version using Docker Compose.
 
-# Known Issues
+# Usage
 
-There can be an issue starting the Docker environment on Windows due to the missing `make-key.sh` script.
+Warning the info is base on 'https://www.procyclingstats.com/races.php?timezone=fr&filter=Filter&p=uci&s=start-finish-schedule'
 
 # Development
 
 If you want to run the project without the Docker environment, follow these steps:
-
-### Generate the needed key
-```bash
-openssl genrsa -out secret/private.pem 2048
-openssl rsa -in secret/private.pem -pubout > static/public.pem
-```
 
 ### Start the code
 ```bash
@@ -40,5 +34,4 @@ go run main.go
 
 # Affiliation
 
-This project is entirely independent and is not affiliated with any school or organization.
-
+This project is entirely independent and is not affiliated with any organization.
