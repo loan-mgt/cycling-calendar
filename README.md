@@ -9,9 +9,7 @@
 
 # About
 
-The goal of the CPE Calendar is to offer students easy and effortless access to their school schedule by syncing it with their personal calendar. This works on all devices (phones, computers, laptops) and with any calendar provider, including Apple and Google.
-
-The calendar automatically updates every hour, keeping you informed of any schedule changes. This project is open-source, and contributions or issue reports are welcome on GitHub.
+Get the estimated end time of each cycling race directly in your calendar!
 
 # Setup
 
