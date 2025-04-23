@@ -73,11 +73,123 @@ func GetInfo(timezone string) ([]types.Event, error) {
 	return events, nil
 }
 
+func GetAllowedRace(category string) ([]string, error) {
+	baseUrl := "https://www.procyclingstats.com/races.php?popular=pro_me&s=upcoming-races"
+	url := fmt.Sprintf("%s&category=1=%s", baseUrl, category)
+
+	logger.Log.Info().Str("category", category).Msg("Fetching allowed races")
+	logger.Log.Debug().Str("url", url).Msg("Generated final URL")
+
+	// Create and send request
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		logger.Log.Error().Str("url", url).Err(err).Msg("Failed to create request")
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Add("User-Agent", "Dalvik/2.1.0 (Linux; U; Android 15; sdk_gphone64_x86_64 Build/AE3A.240806.005)")
+	req.Header.Add("Accept-Encoding", "gzip")
+	req.Header.Add("Accept-Language", "en-US,en;q=0.5")
+	req.Header.Add("Connection", "Keep-Alive")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		logger.Log.Error().Str("url", url).Err(err).Msg("Request failed")
+		return nil, fmt.Errorf("request failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	// Check response status
+	if resp.StatusCode != http.StatusOK {
+		logger.Log.Error().Str("url", url).Int("statusCode", resp.StatusCode).Msg("Non-200 response")
+		return nil, fmt.Errorf("received non-200 response: %d", resp.StatusCode)
+	}
+
+	// Handle gzip if needed
+	var reader io.Reader = resp.Body
+	if resp.Header.Get("Content-Encoding") == "gzip" {
+		reader, err = gzip.NewReader(resp.Body)
+		if err != nil {
+			logger.Log.Error().Str("url", url).Err(err).Msg("Failed to create gzip reader")
+			return nil, fmt.Errorf("failed to create gzip reader: %w", err)
+		}
+		defer reader.(*gzip.Reader).Close()
+	}
+
+	// Parse HTML and extract events
+	doc, err := html.Parse(reader)
+	if err != nil {
+		logger.Log.Error().Str("url", url).Err(err).Msg("Failed to parse HTML")
+		return nil, fmt.Errorf("failed to parse HTML: %w", err)
+	}
+
+	races, err := extractRacesFromHTML(doc)
+	if err != nil {
+		logger.Log.Error().Str("url", url).Err(err).Msg("Failed to extract races")
+		return nil, fmt.Errorf("failed to extract races: %w", err)
+	}
+
+	logger.Log.Info().Str("category", category).Int("raceCount", len(races)).Msg("Allowed races fetched successfully")
+	return races, nil
+}
+
+func extractRacesFromHTML(doc *html.Node) ([]string, error) {
+	var races []string
+
+	table := findNode(doc, func(n *html.Node) bool {
+		return n.Type == html.ElementNode && n.Data == "table" && hasClass(n, "basic")
+	})
+	if table == nil {
+		return nil, fmt.Errorf("table with class 'basic' not found")
+	}
+
+	tbody := findNode(table, func(n *html.Node) bool {
+		return n.Type == html.ElementNode && n.Data == "tbody"
+	})
+	if tbody == nil {
+		return nil, fmt.Errorf("tbody not found in table")
+	}
+
+	for tr := tbody.FirstChild; tr != nil; tr = tr.NextSibling {
+		if tr.Type != html.ElementNode || tr.Data != "tr" {
+			continue
+		}
+
+		tdCount := 0
+		for td := tr.FirstChild; td != nil; td = td.NextSibling {
+			if td.Type != html.ElementNode || td.Data != "td" {
+				continue
+			}
+
+			if tdCount == 1 { // second column (index 1)
+				// Try to find anchor tag, or grab raw text
+				var eventName string
+				for c := td.FirstChild; c != nil; c = c.NextSibling {
+					if c.Type == html.ElementNode && c.Data == "a" && c.FirstChild != nil {
+						eventName = c.FirstChild.Data
+						break
+					} else if c.Type == html.TextNode {
+						eventName = c.Data
+					}
+				}
+				eventName = strings.TrimSpace(eventName)
+				if eventName != "" {
+					races = append(races, eventName)
+				}
+				break
+			}
+
+			tdCount++
+		}
+	}
+
+	return races, nil
+}
+
 // extractEventsFromHTML parses the HTML and extracts events from the table
 func extractEventsFromHTML(doc *html.Node) ([]types.Event, error) {
 	// Find table rows directly with a CSS-like selector approach
 	var events []types.Event
-	var tbody *html.Node
 
 	// First find the table.basic element
 	table := findNode(doc, func(n *html.Node) bool {
@@ -91,7 +203,7 @@ func extractEventsFromHTML(doc *html.Node) ([]types.Event, error) {
 	}
 
 	// Then find the tbody within that table
-	tbody = findNode(table, func(n *html.Node) bool {
+	tbody := findNode(table, func(n *html.Node) bool {
 		return n.Type == html.ElementNode && n.Data == "tbody"
 	})
 
@@ -125,6 +237,11 @@ func extractEventsFromHTML(doc *html.Node) ([]types.Event, error) {
 
 		// Parse title and stage info
 		title, stage := parseRaceInfo(raceInfo)
+
+		// Handle empty start or end times
+		if startTime == "-" {
+			continue
+		}
 
 		events = append(events, types.Event{
 			Date:      date,

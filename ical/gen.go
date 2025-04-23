@@ -4,8 +4,51 @@ import (
 	"cpe/calendar/logger"
 	"cpe/calendar/types"
 	"fmt"
+	"strconv"
+	"strings"
 	"time"
 )
+
+// parseDateTime combines date (DD/MM) and time (HH:MM) into a time.Time
+func parseDateTime(timeStr, dateStr string) (time.Time, error) {
+	// Parse the date part (DD/MM)
+	dateParts := strings.Split(dateStr, "/")
+	if len(dateParts) != 2 {
+		return time.Time{}, fmt.Errorf("invalid date format: %s", dateStr)
+	}
+
+	day, err := strconv.Atoi(dateParts[0])
+	if err != nil {
+		return time.Time{}, fmt.Errorf("invalid day: %s", dateParts[0])
+	}
+
+	month, err := strconv.Atoi(dateParts[1])
+	if err != nil {
+		return time.Time{}, fmt.Errorf("invalid month: %s", dateParts[1])
+	}
+
+	// Parse the time part (HH:MM)
+	timeParts := strings.Split(timeStr, ":")
+	if len(timeParts) != 2 {
+		return time.Time{}, fmt.Errorf("invalid time format: %s", timeStr)
+	}
+
+	hour, err := strconv.Atoi(timeParts[0])
+	if err != nil {
+		return time.Time{}, fmt.Errorf("invalid hour: %s", timeParts[0])
+	}
+
+	minute, err := strconv.Atoi(timeParts[1])
+	if err != nil {
+		return time.Time{}, fmt.Errorf("invalid minute: %s", timeParts[1])
+	}
+
+	// Use current year
+	year := time.Now().Year()
+
+	// Create time.Time object
+	return time.Date(year, time.Month(month), day, hour, minute, 0, 0, time.UTC), nil
+}
 
 // GenerateICS generates an ICS string from a list of events
 func GenerateICS(events []types.Event, calendarName string) string {
@@ -19,17 +62,13 @@ func GenerateICS(events []types.Event, calendarName string) string {
 	ics += fmt.Sprintf("X-WR-CALDESC:%s: %s\n", "Cycling Calendar", calendarName)
 	ics += "REFRESH-INTERVAL;VALUE=DURATION:PT1H\n"
 
-	// Define the layout for parsing the datetime with a timezone offset
-	const layout = "2006-01-02T15:04:05.000"
-
 	// Loop over each event and generate the calendar content
 	for _, event := range events {
-
 		summary := event.Title
 		description := event.Stage
 
 		// Parse the start and end times in the given time zone
-		start, err := time.Parse(layout, event.StartTime)
+		startDateTime, err := parseDateTime(event.StartTime, event.Date)
 		if err != nil {
 			logger.Log.Error().
 				Err(err).
@@ -39,17 +78,23 @@ func GenerateICS(events []types.Event, calendarName string) string {
 			continue
 		}
 
-		end, err := time.Parse(layout, event.EndTime)
-		if err != nil {
-			logger.Log.Error().
-				Err(err).
-				Str("EndTime", event.EndTime).
-				Str("Date", event.Date).
-				Msg("Error parsing end time")
-			continue
+		// For end time, use start time + 3h if not provided
+		var endDateTime time.Time
+		if event.EndTime != "" {
+			endDateTime, err = parseDateTime(event.EndTime, event.Date)
+			if err != nil {
+				logger.Log.Error().
+					Err(err).
+					Str("EndTime", event.EndTime).
+					Str("Date", event.Date).
+					Msg("Error parsing end time")
+				continue
+			}
+		} else {
+			endDateTime = startDateTime.Add(3 * time.Hour)
 		}
 
-		// Normalize start and end times to UTC
+		// Normalize to specified timezone (Europe/Paris)
 		loc, err := time.LoadLocation("Europe/Paris")
 		if err != nil {
 			logger.Log.Error().
@@ -58,8 +103,10 @@ func GenerateICS(events []types.Event, calendarName string) string {
 			continue
 		}
 
-		start = time.Date(start.Year(), start.Month(), start.Day(), start.Hour(), start.Minute(), start.Second(), 0, loc).UTC()
-		end = time.Date(end.Year(), end.Month(), end.Day(), end.Hour(), end.Minute(), end.Second(), 0, loc).UTC()
+		start := time.Date(startDateTime.Year(), startDateTime.Month(), startDateTime.Day(),
+			startDateTime.Hour(), startDateTime.Minute(), 0, 0, loc).UTC()
+		end := time.Date(endDateTime.Year(), endDateTime.Month(), endDateTime.Day(),
+			endDateTime.Hour(), endDateTime.Minute(), 0, 0, loc).UTC()
 
 		// Log event details
 		logger.Log.Info().

@@ -4,8 +4,10 @@ import (
 	"cpe/calendar/ical"
 	"cpe/calendar/logger"
 	"cpe/calendar/request"
+	"cpe/calendar/types"
 	"net/http"
 	"os"
+	"strings"
 )
 
 func Health(w http.ResponseWriter, r *http.Request) {
@@ -19,7 +21,6 @@ func GenerateICSHandler(w http.ResponseWriter, r *http.Request) {
 	// Get start and end times from environment variables
 	timezone := os.Getenv("TIMEZONE")
 
-	// Log environment variables
 	logger.Log.Info().
 		Str("timezone", timezone).
 		Msg("Using environment variables for timezone")
@@ -37,17 +38,44 @@ func GenerateICSHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get allowed events
+	allowedEvents, err := request.GetAllowedRace("1")
+	if err != nil {
+		logger.Log.Error().
+			Err(err).
+			Msg("Failed to fetch allowed races")
+		http.Error(w, "Failed to fetch data", http.StatusInternalServerError)
+		return
+	}
+
 	logger.Log.Info().
 		Int("eventsCount", len(events)).
-		Msg("Fetched events successfully")
+		Int("allowedEventsCount", len(allowedEvents)).
+		Msg("Fetched events and allowed events successfully")
 
-	// Generate the iCal file with the calendar name
-	icsContent := ical.GenerateICS(events, calendarName)
+	// Build a set of allowed event names for fast lookup
+	allowedSet := make(map[string]struct{})
+	for _, name := range allowedEvents {
+		allowedSet[strings.ToLower(name)] = struct{}{}
+	}
 
-	// Set headers for the iCal file response with the provided filename
+	// Filter events by allowed list
+	var filteredEvents []types.Event
+	for _, e := range events {
+		if _, ok := allowedSet[strings.ToLower(e.Title)]; ok {
+			filteredEvents = append(filteredEvents, e)
+		}
+	}
+
+	logger.Log.Info().
+		Int("filteredEventsCount", len(filteredEvents)).
+		Msg("Filtered allowed events")
+
+	// Generate the iCal file
+	icsContent := ical.GenerateICS(filteredEvents, calendarName)
+
+	// Set headers and write content
 	w.Header().Set("Content-Type", "text/calendar")
 	w.Header().Set("Content-Disposition", "attachment; filename=\""+filename+"\"")
-
-	// Write the iCal content to the response
 	w.Write([]byte(icsContent))
 }
