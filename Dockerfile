@@ -14,7 +14,7 @@ RUN go mod download
 COPY . .
 
 # Build the Go binary
-RUN go build -o /app/calendar-app main.go
+RUN go build -o /app/cycling-app main.go
 
 # Final stage
 FROM golang:1.23-alpine
@@ -25,19 +25,11 @@ RUN apk add --no-cache openssl
 # Create a working directory
 WORKDIR /root/
 
-# Create the secret directory for keys
-RUN mkdir -p secret
-RUN mkdir -p log
-
 # Copy the compiled Go binary from the build stage
-COPY --from=builder /app/calendar-app .
+COPY --from=builder /app/cycling-app .
 
 # Copy static files to the container
 COPY static ./static
-COPY make-key.sh .
-
-# Make the script executable
-RUN chmod +x ./make-key.sh
 
 # Use a shell form to run both commands sequentially
-CMD sh -c "./make-key.sh && ./calendar-app"
+CMD "/cycling-app"
