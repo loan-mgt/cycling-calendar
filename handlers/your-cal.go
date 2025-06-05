@@ -39,7 +39,7 @@ func GenerateICSHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get allowed events
-	allowedEvents, err := request.GetAllowedRace("1")
+	allowedEvents, err := request.GetAllowedRace("")
 	if err != nil {
 		logger.Log.Error().
 			Err(err).
@@ -64,8 +64,16 @@ func GenerateICSHandler(w http.ResponseWriter, r *http.Request) {
 	for _, e := range events {
 		if _, ok := allowedSet[strings.ToLower(e.Title)]; ok {
 			filteredEvents = append(filteredEvents, e)
+		} else {
+			logger.Log.Warn().
+				Str("eventTitle", e.Title).
+				Msg("Event not allowed")
 		}
 	}
+
+	logger.Log.Info().
+		Strs("allowedEvents", allowedEvents).
+		Msg("List of allowed events")
 
 	logger.Log.Info().
 		Int("filteredEventsCount", len(filteredEvents)).

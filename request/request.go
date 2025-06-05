@@ -74,8 +74,8 @@ func GetInfo(timezone string) ([]types.Event, error) {
 }
 
 func GetAllowedRace(category string) ([]string, error) {
-	baseUrl := "https://www.procyclingstats.com/races.php?popular=pro_me&s=upcoming-races"
-	url := fmt.Sprintf("%s&category=1=%s", baseUrl, category)
+	baseUrl := "https://www.procyclingstats.com/races.php?year=2025&circuit=1&class=&filter=Filter&s=upcoming"
+	url := fmt.Sprintf("%s&%s", baseUrl, category)
 
 	logger.Log.Info().Str("category", category).Msg("Fetching allowed races")
 	logger.Log.Debug().Str("url", url).Msg("Generated final URL")
@@ -161,7 +161,7 @@ func extractRacesFromHTML(doc *html.Node) ([]string, error) {
 				continue
 			}
 
-			if tdCount == 1 { // second column (index 1)
+			if tdCount == 2 { // second column (index 1)
 				// Try to find anchor tag, or grab raw text
 				var eventName string
 				for c := td.FirstChild; c != nil; c = c.NextSibling {
