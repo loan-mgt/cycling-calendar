@@ -32,4 +32,4 @@ COPY --from=builder /app/cycling-app .
 COPY static ./static
 
 # Use a shell form to run both commands sequentially
-CMD "/cycling-app"
+CMD "./cycling-app"
