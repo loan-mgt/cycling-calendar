@@ -89,33 +89,48 @@
     <script src="/static/encryption.js"></script>
     <script>
         const cat = [
-            "1.1",
-            "1.2",
-            "1.2U",
-            "1.Ncup",
-            "1.Pro",
+            // Road racing
             "1.UWT",
             "1.WWT",
-            "2.1",
-            "2.2",
-            "2.2U",
-            "2.Ncup",
-            "2.Pro",
             "2.UWT",
             "2.WWT",
+            "1.Pro",
+            "2.Pro",
+            "1.1",
+            "2.1",
+            "1.2",
+            "2.2",
+            "1.2U",
+            "2.2U",
+            "1.Ncup",
+            "2.Ncup",
+            // Cyclo-cross & Championships
             "CC",
             "JR",
             "NC",
             "WC",
         ];
-
-        let selected = ["1.UWT", "2.UWT", "1.WWT", "2.WWT"];
+        // Load selected categories from localStorage or use defaults
+        let selected = [];
+        const stored = localStorage.getItem("selectedCategories");
+        if (stored) {
+            try {
+            selected = JSON.parse(stored);
+            } catch (e) {
+            selected = ["1.UWT", "2.UWT", "1.WWT", "2.WWT"];
+            }
+        } else {
+            selected = ["1.UWT", "2.UWT", "1.WWT", "2.WWT"];
+        }
         let url = window.location.origin + "/cycling-calendar.ics";
 
         const chipsContainer = document.getElementById("chips-container");
         cat.forEach((category) => {
             const chip = document.createElement("div");
             chip.classList.add("chip");
+            if (selected.includes(category)) {
+                chip.classList.add("selected");
+            }
             chip.textContent = category;
             chip.addEventListener("click", () => {
                 if (chip.classList.contains("selected")) {
@@ -125,13 +140,16 @@
                     chip.classList.add("selected");
                     selected.push(category);
                 }
+                localStorage.setItem("selectedCategories", JSON.stringify(selected));
             });
             chipsContainer.appendChild(chip);
         });
 
         function copyLink() {
+            let baseUrl = `${url}?`;
+            baseUrl += selected.map((cat) => `class=${cat}`).join("&");
             navigator.clipboard
-                .writeText(url)
+                .writeText(baseUrl)
                 .then(() => {
                     showToast("success", "Link copied successfully!");
                 })

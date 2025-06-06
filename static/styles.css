@@ -282,9 +282,11 @@ li .btn-secondary {
 
 .chips {
   display: flex;
+  flex-direction: column;
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-top: 1rem;
+  max-height: 6rem;
 }
 
 .chip {
@@ -293,11 +295,12 @@ li .btn-secondary {
   padding: 0.5rem 1rem;
   border-radius: var(--border-radius);
   cursor: pointer;
+  font-size: .7rem;
 }
 
 .chip.selected {
   background-color: var(--primary-color);
-  color: var(--background-color);
+  color: black;
 }
 #success {
     display: none;

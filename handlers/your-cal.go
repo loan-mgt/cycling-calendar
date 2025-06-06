@@ -110,10 +110,6 @@ func GenerateICSHandler(w http.ResponseWriter, r *http.Request) {
 	for _, e := range events {
 		if _, ok := allowedSet[strings.ToLower(e.Title)]; ok {
 			filteredEvents = append(filteredEvents, e)
-		} else {
-			logger.Log.Warn().
-				Str("eventTitle", e.Title).
-				Msg("Event not allowed")
 		}
 	}
 

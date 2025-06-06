@@ -6,6 +6,7 @@ import (
 	"cpe/calendar/metrics"
 	"html/template"
 	"net/http"
+	"os"
 	"path/filepath"
 
 	"github.com/gorilla/mux"
@@ -22,6 +23,10 @@ func init() {
 	if err != nil {
 		// Log error and exit if environment variables can't be loaded
 		logger.Log.Warn().Err(err).Msg("Error loading .env file")
+	}
+	// Warn if TIMEZONE is not set
+	if tz := os.Getenv("TIMEZONE"); tz == "" {
+		logger.Log.Warn().Msg("TIMEZONE environment variable is not set")
 	}
 
 	// Parse templates
