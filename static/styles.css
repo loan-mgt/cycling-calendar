@@ -280,6 +280,25 @@ li .btn-secondary {
     width: 100%;
 }
 
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.chip {
+  background-color: var(--secondary-background-color);
+  color: var(--text-color);
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+}
+
+.chip.selected {
+  background-color: var(--primary-color);
+  color: var(--background-color);
+}
 #success {
     display: none;
     flex-direction: column;

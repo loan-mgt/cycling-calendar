@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"time"
 
 	"golang.org/x/net/html"
 )
@@ -74,8 +75,9 @@ func GetInfo(timezone string) ([]types.Event, error) {
 }
 
 func GetAllowedRace(category string) ([]string, error) {
-	baseUrl := "https://www.procyclingstats.com/races.php?year=2025&circuit=1&class=&filter=Filter&s=upcoming"
-	url := fmt.Sprintf("%s&%s", baseUrl, category)
+	currentYear := time.Now().Year()
+	baseUrl := fmt.Sprintf("https://www.procyclingstats.com/races.php?year=%d&circuit=&class=%s&filter=Filter&s=upcoming", currentYear, category)
+	url := baseUrl
 
 	logger.Log.Info().Str("category", category).Msg("Fetching allowed races")
 	logger.Log.Debug().Str("url", url).Msg("Generated final URL")

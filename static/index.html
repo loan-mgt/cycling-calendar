@@ -1,128 +1,162 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Cycling Calendar</title>
-        <meta
-            name="description"
-            content="Sync your cycling calendar with your personal calendar"
-        />
-        <meta name="keywords" content="calendar, ics, CPE, apple, google" />
-        <meta name="author" content="https://github.com/loan-mgt" />
-        <meta property="og:title" content="Cycling Calendar" />
-        <meta
-            property="og:description"
-            content="Sync your cycling calendar with your personal calendar"
-        />
-        <meta property="og:image" content="/static/banner.png" />
-        <meta property="og:url" content="https://cpe-cal.for-loop.fr" />
-        <meta property="og:type" content="website" />
-        <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
-        <link rel="stylesheet" href="/static/styles.css" />
-    </head>
 
-    <body>
-        <header>
-            <nav>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cycling Calendar</title>
+    <meta name="description" content="Sync your cycling calendar with your personal calendar" />
+    <meta name="keywords" content="calendar, ics, CPE, apple, google" />
+    <meta name="author" content="https://github.com/loan-mgt" />
+    <meta property="og:title" content="Cycling Calendar" />
+    <meta property="og:description" content="Sync your cycling calendar with your personal calendar" />
+    <meta property="og:image" content="/static/banner.png" />
+    <meta property="og:url" content="https://cpe-cal.for-loop.fr" />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/styles.css" />
+</head>
+
+<body>
+    <header>
+        <nav>
+            <img src="/static/logo.svg" />
+
+            <ul class="pc-nav">
+                <li><a href="#about">About</a></li>
+                <li><a href="#affiliation">Affiliation</a></li>
+            </ul>
+            <ul>
+                <li>
+                    <a href="https://github.com/loan-mgt/cycling-calendar">Source Code</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Sync your cycling calendar with your phone</h1>
+            <p>
+                Stay informed of any schedule changes effortlessly and
+                easily access your next race
+            </p>
+            <button onclick="copyLink()" class="btn-primary btn-hero">
                 <img src="/static/logo.svg" />
-
-                <ul class="pc-nav">
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#affiliation">Affiliation</a></li>
-                </ul>
-                <ul>
-                    <li>
-                        <a href="https://github.com/loan-mgt/cycling-calendar"
-                            >Source Code</a
-                        >
-                    </li>
-                </ul>
-            </nav>
-        </header>
-
-        <main>
-            <section class="hero">
-                <h1>Sync your cycling calendar with your phone</h1>
-                <p>
-                    Stay informed of any schedule changes effortlessly and
-                    easily access your next race
-                </p>
-                <button onclick="copyLink()" class="btn-primary btn-hero">
-                    <img src="/static/logo.svg" />
-                    <span>Get your calendar</span>
-                </button>
-            </section>
-
-            <section id="about" class="about">
-                <h2>About</h2>
-                <p>
-                    The goal of the Cycling Calendar is to give cycling fans easy access to upcoming race schedules, including start times and estimated end times. Stay up to date with all the races and never miss an event, whether you're at home or on the go.
-                </p>
-                <p>
-                    The calendar will automatically update on your device every
-                    hour, allowing you to stay informed of any schedule changes.
-                </p>
-                <p>
-                    This project is open-source. If at any time you notice a
-                    problem or a missing feature, feel free to contact us and
-                    share it on GitHub.
-                </p>
-            </section>
-
-            <section id="affiliation" class="affiliation">
-                <h2>Affiliation</h2>
-                <p>
-                    This project is entirely independent and is not affiliated
-                    with any organization.
-                </p>
-            </section>
-        </main>
-
-        <footer>
-            <div class="footer-content">
-                <p>Cycling Calendar</p>
-                <a
-                    class="btn-secondary"
-                    href="https://github.com/loan-mgt/cycling-calendar"
-                    >Source Code</a
-                >
+                <span>Get your calendar</span>
+            </button>
+            <div class="chips" id="chips-container">
             </div>
-            <div class="mobile-filler">
-            </div>
-        </footer>
-        <div id="toast">Link copied to clipboard!</div>
-        <script src="/static/encryption.js"></script>
-        <script>
-            let url = window.location.origin + "/cycling-calendar.ics";
 
-            function copyLink() {
-                navigator.clipboard
-                    .writeText(url)
-                    .then(() => {
-                        showToast("success", "Link copied successfully!");
-                    })
-                    .catch((err) => {
-                        console.error("Failed to copy text: ", err);
-                    });
-            }
+        </section>
 
-            function showToast(type, message) {
-                const toast = document.getElementById("toast");
-                toast.innerText = message;
-                if (type === "error") {
-                    toast.classList.add("error");
-                    toast.classList.remove("success");
-                } else if (type === "success") {
-                    toast.classList.add("success");
-                    toast.classList.remove("error");
+        <section id="about" class="about">
+            <h2>About</h2>
+            <p>
+                The goal of the Cycling Calendar is to give cycling fans easy access to upcoming race schedules,
+                including start times and estimated end times. Stay up to date with all the races and never miss an
+                event, whether you're at home or on the go.
+            </p>
+            <p>
+                The calendar will automatically update on your device every
+                hour, allowing you to stay informed of any schedule changes.
+            </p>
+            <p>
+                This project is open-source. If at any time you notice a
+                problem or a missing feature, feel free to contact us and
+                share it on GitHub.
+            </p>
+        </section>
+
+        <section id="affiliation" class="affiliation">
+            <h2>Affiliation</h2>
+            <p>
+                This project is entirely independent and is not affiliated
+                with any organization.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>Cycling Calendar</p>
+            <a class="btn-secondary" href="https://github.com/loan-mgt/cycling-calendar">Source Code</a>
+        </div>
+        <div class="mobile-filler">
+        </div>
+    </footer>
+    <div id="toast">Link copied to clipboard!</div>
+    <script src="/static/encryption.js"></script>
+    <script>
+        const cat = [
+            "1.1",
+            "1.2",
+            "1.2U",
+            "1.Ncup",
+            "1.Pro",
+            "1.UWT",
+            "1.WWT",
+            "2.1",
+            "2.2",
+            "2.2U",
+            "2.Ncup",
+            "2.Pro",
+            "2.UWT",
+            "2.WWT",
+            "CC",
+            "JR",
+            "NC",
+            "WC",
+        ];
+
+        let selected = ["1.UWT", "2.UWT", "1.WWT", "2.WWT"];
+        let url = window.location.origin + "/cycling-calendar.ics";
+
+        const chipsContainer = document.getElementById("chips-container");
+        cat.forEach((category) => {
+            const chip = document.createElement("div");
+            chip.classList.add("chip");
+            chip.textContent = category;
+            chip.addEventListener("click", () => {
+                if (chip.classList.contains("selected")) {
+                    chip.classList.remove("selected");
+                    selected = selected.filter((item) => item !== category);
+                } else {
+                    chip.classList.add("selected");
+                    selected.push(category);
                 }
+            });
+            chipsContainer.appendChild(chip);
+        });
 
-                toast.classList.add("show");
-                setTimeout(() => {
-                    toast.className = toast.className.replace("show", "");
-                }, 3000);
+        function copyLink() {
+            navigator.clipboard
+                .writeText(url)
+                .then(() => {
+                    showToast("success", "Link copied successfully!");
+                })
+                .catch((err) => {
+                    console.error("Failed to copy text: ", err);
+                });
+        }
+
+        function showToast(type, message) {
+            const toast = document.getElementById("toast");
+            toast.innerText = message;
+            if (type === "error") {
+                toast.classList.add("error");
+                toast.classList.remove("success");
+            } else if (type === "success") {
+                toast.classList.add("success");
+                toast.classList.remove("error");
             }
-        </script>
-    </body>
+
+            toast.classList.add("show");
+            setTimeout(() => {
+                toast.className = toast.className.replace("show", "");
+            }, 3000);
+        }
+    </script>
+</body>
+
 </html>

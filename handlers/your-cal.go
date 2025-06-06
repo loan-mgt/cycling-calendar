@@ -10,6 +10,28 @@ import (
 	"strings"
 )
 
+var allowedCategory = []string{
+	"",
+	"1.1",
+	"1.2",
+	"1.2U",
+	"1.Ncup",
+	"1.Pro",
+	"1.UWT",
+	"1.WWT",
+	"2.1",
+	"2.2",
+	"2.2U",
+	"2.Ncup",
+	"2.Pro",
+	"2.UWT",
+	"2.WWT",
+	"CC",
+	"JR",
+	"NC",
+	"WC",
+}
+
 func Health(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	logger.Log.Info().
@@ -38,14 +60,38 @@ func GenerateICSHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Parse 'class' query parameters into a slice
+	requestClasses := r.URL.Query()["class"]
+
+	// Optional: log or use the values
+	logger.Log.Info().
+		Strs("classes", requestClasses).
+		Msg("Received class filters")
+
+	// Check if the request classes are in the allowed list
+	for _, c := range requestClasses {
+		if !contains(allowedCategory, c) {
+			logger.Log.Error().
+				Str("class", c).
+				Msg("Class is not allowed")
+			http.Error(w, "Class is not allowed", http.StatusBadRequest)
+			return
+		}
+	}
+
 	// Get allowed events
-	allowedEvents, err := request.GetAllowedRace("")
-	if err != nil {
-		logger.Log.Error().
-			Err(err).
-			Msg("Failed to fetch allowed races")
-		http.Error(w, "Failed to fetch data", http.StatusInternalServerError)
-		return
+	allowedEvents := make([]string, 0)
+	for _, category := range requestClasses {
+		e, err := request.GetAllowedRace(category)
+		if err != nil {
+			logger.Log.Error().
+				Err(err).
+				Str("category", category).
+				Msg("Failed to fetch allowed races")
+			http.Error(w, "Failed to fetch data", http.StatusInternalServerError)
+			return
+		}
+		allowedEvents = append(allowedEvents, e...)
 	}
 
 	logger.Log.Info().
@@ -86,4 +132,13 @@ func GenerateICSHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/calendar")
 	w.Header().Set("Content-Disposition", "attachment; filename=\""+filename+"\"")
 	w.Write([]byte(icsContent))
+}
+
+func contains(slice []string, item string) bool {
+	for _, s := range slice {
+		if s == item {
+			return true
+		}
+	}
+	return false
 }
