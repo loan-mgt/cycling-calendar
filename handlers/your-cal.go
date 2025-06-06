@@ -62,6 +62,9 @@ func GenerateICSHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Parse 'class' query parameters into a slice
 	requestClasses := r.URL.Query()["class"]
+	if len(requestClasses) == 0 || (len(requestClasses) == 1 && requestClasses[0] == "") {
+		requestClasses = []string{"2.UWT", "1.UWT"}
+	}
 
 	// Optional: log or use the values
 	logger.Log.Info().
