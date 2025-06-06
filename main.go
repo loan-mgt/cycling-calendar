@@ -51,6 +51,11 @@ func main() {
 	// Serve calendar.ics route
 	r.HandleFunc("/cycling-calendar.ics", handlers.GenerateICSHandler).Methods("GET")
 
+	r.HandleFunc("/robots.txt", serveRobots).Methods("GET")
+
+	// Serve sitemap.xml
+	r.HandleFunc("/sitemap.xml", serveSitemap).Methods("GET")
+
 	// check app health
 	r.HandleFunc("/health", handlers.Health).Methods("GET")
 
@@ -71,4 +76,13 @@ func serveIndex(w http.ResponseWriter, r *http.Request) {
 		logger.Log.Error().Err(err).Msg("Error rendering template")
 		http.Error(w, "Error rendering template", http.StatusInternalServerError)
 	}
+}
+
+func serveRobots(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "static/robots.txt")
+}
+
+// serveSitemap serves the sitemap.xml file
+func serveSitemap(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "static/sitemap.xml")
 }

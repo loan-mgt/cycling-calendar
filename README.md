@@ -27,7 +27,7 @@ If you want to run the project without the Docker environment, follow these step
 ### Start the code
 ```bash
 go mod download
-go run main.go
+go run .
 ```
 
 # Affiliation
