@@ -5,11 +5,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cycling Calendar - Never Miss a Cycling Race Again</title>
-    <meta name="description" content="Sync your cycling calendar with your personal calendar and never miss a race again. Easily integrate with Apple, Google, and other calendar services." />
-    <meta name="keywords" content="cycling calendar, race calendar, ics, CPE, apple calendar, google calendar, sports schedule" />
+    <meta name="description"
+        content="Sync your cycling calendar with your personal calendar and never miss a race again. Easily integrate with Apple, Google, and other calendar services." />
+    <meta name="keywords"
+        content="cycling calendar, race calendar, ics, CPE, apple calendar, google calendar, sports schedule" />
     <meta name="author" content="Cycling Calendar Team" />
     <meta property="og:title" content="Cycling Calendar - Never Miss a Cycling Race Again" />
-    <meta property="og:description" content="Sync your cycling calendar with your personal calendar and never miss a race again." />
+    <meta property="og:description"
+        content="Sync your cycling calendar with your personal calendar and never miss a race again." />
     <meta property="og:image" content="/static/banner.png" />
     <meta property="og:url" content="https://cpe-cal.for-loop.fr" />
     <meta property="og:type" content="website" />
@@ -28,8 +31,10 @@
 
             <ul class="pc-nav">
                 <li><a href="#about">About</a></li>
+                <li><a href="#guide">Guide</a></li>
                 <li><a href="#affiliation">Affiliation</a></li>
             </ul>
+
             <ul>
                 <li>
                     <a href="https://github.com/loan-mgt/cycling-calendar">Source Code</a>
@@ -71,6 +76,47 @@
                 share it on GitHub.
             </p>
         </section>
+
+        <section id="guide" class="guide">
+            <h2>Guide</h2>
+
+            <div class="guides">
+
+
+            <div>
+                <h3>iOS Setup</h3>
+                <ol>
+                    <li>Open the <strong>Calendar</strong> app on your iPhone.</li>
+                    <li>Tap <strong>Calendars</strong> at the bottom of the screen.</li>
+                    <li>Tap <strong>Add Calendar</strong> &rarr; <strong>Add Subscription Calendar</strong>.</li>
+                    <li>Enter the calendar URL and tap <strong>Subscribe</strong>.</li>
+                </ol>
+                <p>
+                    Source: <a class="underline"
+                        href="https://support.apple.com/en-au/guide/iphone/iph3d1110d4/ios#:~:text=Tap%20Calendars%20at%20the%20bottom,enter%20the%20URL%20of%20the%20."
+                        target="_blank" rel="noopener">Apple Support</a>
+                </p>
+            </div>
+
+            <div>
+                <h3>Android Setup (Google Calendar)</h3>
+                <ol>
+                    <li>Open <a href="https://calendar.google.com" target="_blank" rel="noopener">Google Calendar</a> on
+                        your computer.</li>
+                    <li>On the left, click the <strong>+</strong> next to "Other calendars".</li>
+                    <li>Select <strong>From URL</strong>.</li>
+                    <li>Enter the calendar URL and click <strong>Add calendar</strong>.</li>
+                </ol>
+                <p>
+                    Source: <a class="underline" href="https://support.google.com/calendar/answer/37100?hl=en&co=GENIE.Platform%3DDesktop"
+                        target="_blank" rel="noopener">Google Support</a>
+                </p>
+            </div>
+
+            </div>
+
+        </section>
+
 
         <section id="affiliation" class="affiliation">
             <h2>Affiliation</h2>
@@ -119,9 +165,9 @@
         const stored = localStorage.getItem("selectedCategories");
         if (stored) {
             try {
-            selected = JSON.parse(stored);
+                selected = JSON.parse(stored);
             } catch (e) {
-            selected = ["1.UWT", "2.UWT", "1.WWT", "2.WWT"];
+                selected = ["1.UWT", "2.UWT", "1.WWT", "2.WWT"];
             }
         } else {
             selected = ["1.UWT", "2.UWT", "1.WWT", "2.WWT"];

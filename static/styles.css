@@ -89,7 +89,7 @@ nav {
     background-color: var(--secondary-background-color);
     width: 80%;
     max-width: 800px;
-    padding: 0 0.5rem 0 1rem;
+    padding: 0 1rem 0 1rem;
     border-radius: var(--border-radius);
     height: 2.8rem;
 }
@@ -196,6 +196,10 @@ footer .mobile-mobile-filler {
     height: 500%;
 }
 
+.underline {
+    text-decoration: underline;
+}
+
 .btn-primary {
     display: flex;
     gap: 0.5rem;
@@ -278,6 +282,13 @@ li .btn-secondary {
     flex-direction: column;
     gap: 0.5rem;
     width: 100%;
+}
+
+.guides {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
 }
 
 .chips {
