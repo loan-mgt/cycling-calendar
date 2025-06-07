@@ -56,6 +56,8 @@ func main() {
 	// Serve sitemap.xml
 	r.HandleFunc("/sitemap.xml", serveSitemap).Methods("GET")
 
+	r.HandleFunc("/uci-classification-guide", serveGuidemap).Methods("GET")
+
 	// check app health
 	r.HandleFunc("/health", handlers.Health).Methods("GET")
 
@@ -85,4 +87,8 @@ func serveRobots(w http.ResponseWriter, r *http.Request) {
 // serveSitemap serves the sitemap.xml file
 func serveSitemap(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "static/sitemap.xml")
+}
+
+func serveGuidemap(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "static/uci-classification-guide.html")
 }

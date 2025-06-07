@@ -200,6 +200,22 @@ footer .mobile-mobile-filler {
     text-decoration: underline;
 }
 
+.light {
+    font-weight: normal !important;
+    font-size: var(--font-size-base);
+}
+
+a.light:hover {
+    text-decoration: underline;
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    width: 100%;
+}
+
 .btn-primary {
     display: flex;
     gap: 0.5rem;
@@ -292,27 +308,28 @@ li .btn-secondary {
 }
 
 .chips {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 1rem;
-  max-height: 6rem;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    max-height: 6rem;
 }
 
 .chip {
-  background-color: var(--secondary-background-color);
-  color: var(--text-color);
-  padding: 0.5rem 1rem;
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  font-size: .7rem;
+    background-color: var(--secondary-background-color);
+    color: var(--text-color);
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: .7rem;
 }
 
 .chip.selected {
-  background-color: var(--primary-color);
-  color: black;
+    background-color: var(--primary-color);
+    color: black;
 }
+
 #success {
     display: none;
     flex-direction: column;
