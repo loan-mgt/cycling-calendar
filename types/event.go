@@ -7,4 +7,5 @@ type Event struct {
 	Stage     string `json:"stage"`
 	StartTime string `json:"start_time"`
 	EndTime   string `json:"end_time"`
+	Link      string `json:"link"`
 }

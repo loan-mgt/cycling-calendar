@@ -123,6 +123,7 @@ func GenerateICS(events []types.Event, calendarName string) string {
 		ics += fmt.Sprintf("DTEND:%s\n", end.Format("20060102T150405Z"))
 		ics += fmt.Sprintf("SUMMARY:%s\n", summary)
 		ics += fmt.Sprintf("DESCRIPTION:%s\n", description)
+		ics += fmt.Sprintf("URL:%s\n", event.Link)
 		ics += "END:VEVENT\n"
 	}
 

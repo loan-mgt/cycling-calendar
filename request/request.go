@@ -232,10 +232,10 @@ func extractEventsFromHTML(doc *html.Node) ([]types.Event, error) {
 		}
 
 		// Extract data from cells
-		date := extractTextContent(cells[0])
-		raceInfo := extractTextContent(cells[2])
-		startTime := extractTextContent(cells[3])
-		endTime := extractTextContent(cells[4])
+		date, _ := extractText(cells[0])
+		raceInfo, link := extractText(cells[2])
+		startTime, _ := extractText(cells[3])
+		endTime, _ := extractText(cells[4])
 
 		// Parse title and stage info
 		title, stage := parseRaceInfo(raceInfo)
@@ -245,12 +245,15 @@ func extractEventsFromHTML(doc *html.Node) ([]types.Event, error) {
 			continue
 		}
 
+		link = fmt.Sprintf("https://www.procyclingstats.com/%s", link)
+
 		events = append(events, types.Event{
 			Date:      date,
 			Title:     title,
 			Stage:     stage,
 			StartTime: startTime,
 			EndTime:   endTime,
+			Link:      link,
 		})
 	}
 
@@ -269,20 +272,32 @@ func parseRaceInfo(raceInfo string) (title, stage string) {
 	return title, stage
 }
 
-func extractTextContent(n *html.Node) string {
-	var buf strings.Builder
-	extractText(n, &buf)
-	return strings.TrimSpace(buf.String())
-}
-
-func extractText(n *html.Node, buf *strings.Builder) {
+func extractText(n *html.Node) (text, link string) {
 	if n.Type == html.TextNode {
-		buf.WriteString(n.Data)
+		return strings.TrimSpace(n.Data), href(n)
 	}
+	buf := ""
+	link = href(n)
 
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
-		extractText(c, buf)
+		buf2, link2 := extractText(c)
+		buf += buf2
+		link += link2
 	}
+
+	return strings.TrimSpace(buf), link
+}
+
+func href(n *html.Node) string {
+	if n.Type == html.ElementNode && n.Data == "a" {
+		for _, attr := range n.Attr {
+			if attr.Key == "href" {
+				return attr.Val
+			}
+		}
+	}
+
+	return ""
 }
 
 func hasClass(n *html.Node, className string) bool {
