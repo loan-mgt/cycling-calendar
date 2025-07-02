@@ -50,22 +50,143 @@ func parseDateTime(timeStr, dateStr string) (time.Time, error) {
 	return time.Date(year, time.Month(month), day, hour, minute, 0, 0, time.UTC), nil
 }
 
+// buildEventDescription creates a formatted description for an event
+func buildEventDescription(event types.Event, hasRaceInfo bool, raceInfoList []*types.RaceInfo, index int) []string {
+	var lines []string
+
+	// Add race info if available
+	if hasRaceInfo && index < len(raceInfoList) && raceInfoList[index] != nil {
+		raceInfo := raceInfoList[index]
+
+		// Add route info (Departure > Arrival) with proper indentation
+		if raceInfo.Departure != "" && raceInfo.Arrival != "" {
+			var locationLine string
+			if raceInfo.Departure == raceInfo.Arrival {
+				locationLine = fmt.Sprintf(" Location: %s", raceInfo.Departure)
+			} else {
+				locationLine = fmt.Sprintf(" Route: %s > %s", raceInfo.Departure, raceInfo.Arrival)
+			}
+
+			// Add distance
+			if raceInfo.DistanceKm != "" {
+				locationLine += fmt.Sprintf(" (%s)", raceInfo.DistanceKm)
+			}
+			lines = append(lines, locationLine)
+			lines = append(lines, "") // Empty line
+		}
+
+		// Add race details with ASCII symbols and proper indentation
+		if raceInfo.VerticalMeters != "" {
+			lines = append(lines, fmt.Sprintf(" * Vertical Meters: %s", raceInfo.VerticalMeters))
+		}
+		if raceInfo.Classification != "" {
+			lines = append(lines, fmt.Sprintf(" * Classification: %s", raceInfo.Classification))
+		}
+		if raceInfo.RaceCategory != "" {
+			lines = append(lines, fmt.Sprintf(" * Category: %s", raceInfo.RaceCategory))
+		}
+		if raceInfo.ProfileScore != "" {
+			lines = append(lines, fmt.Sprintf(" * Profile Score: %s", raceInfo.ProfileScore))
+		}
+
+		// Add a separator if we have race info
+		if raceInfo.Departure != "" || raceInfo.Classification != "" {
+			lines = append(lines, "") // Empty line
+		}
+	}
+
+	// Always add the link at the end with proper indentation
+	if event.Link != "" {
+		lines = append(lines, fmt.Sprintf(" More info: %s", event.Link))
+	}
+
+	return lines
+}
+
+// escapeICSText properly escapes text for ICS format
+func escapeICSText(text string) string {
+	// Escape backslashes, commas, and semicolons
+	text = strings.ReplaceAll(text, "\\", "\\\\")
+	text = strings.ReplaceAll(text, ",", "\\,")
+	text = strings.ReplaceAll(text, ";", "\\;")
+
+	// Remove or replace problematic characters
+	text = strings.ReplaceAll(text, "\r", "")
+	text = strings.ReplaceAll(text, "\t", " ")
+
+	return text
+}
+
+// foldICSLine properly folds long ICS lines according to RFC 5545
+func foldICSLine(line string) string {
+	if len(line) <= 75 {
+		return line + "\r\n"
+	}
+
+	var result strings.Builder
+	remaining := line
+
+	// First line can use full 75 characters
+	if len(remaining) > 75 {
+		result.WriteString(remaining[:75])
+		result.WriteString("\r\n")
+		remaining = remaining[75:]
+	} else {
+		result.WriteString(remaining)
+		result.WriteString("\r\n")
+		return result.String()
+	}
+
+	// Subsequent lines start with a space and can use 74 characters (75 - 1 for space)
+	for len(remaining) > 0 {
+		if len(remaining) > 74 {
+			result.WriteString(" ")
+			result.WriteString(remaining[:74])
+			result.WriteString("\r\n")
+			remaining = remaining[74:]
+		} else {
+			result.WriteString(" ")
+			result.WriteString(remaining)
+			result.WriteString("\r\n")
+			break
+		}
+	}
+
+	return result.String()
+}
+
 // GenerateICS generates an ICS string from a list of events
-func GenerateICS(events []types.Event, calendarName string) string {
-	// Start building the ICS string
-	ics := "BEGIN:VCALENDAR\n"
-	ics += "VERSION:2.0\n"
-	ics += "PRODID:-//github.com/qypol342 //Cycling Calendar//EN\n"
-	ics += fmt.Sprintf("NAME:%s\n", calendarName)
-	ics += fmt.Sprintf("X-WR-CALNAME:%s\n", calendarName)
-	ics += fmt.Sprintf("Description:%s: %s\n", "Cycling Calendar", calendarName)
-	ics += fmt.Sprintf("X-WR-CALDESC:%s: %s\n", "Cycling Calendar", calendarName)
-	ics += "REFRESH-INTERVAL;VALUE=DURATION:PT1H\n"
+func GenerateICS(events []types.Event, calendarName string, raceInfoList []*types.RaceInfo) string {
+	// Start building the ICS string with proper CRLF line endings
+	ics := "BEGIN:VCALENDAR\r\n"
+	ics += "VERSION:2.0\r\n"
+	ics += "PRODID:-//github.com/qypol342 //Cycling Calendar//EN\r\n"
+	ics += fmt.Sprintf("NAME:%s\r\n", calendarName)
+	ics += fmt.Sprintf("X-WR-CALNAME:%s\r\n", calendarName)
+	ics += fmt.Sprintf("Description:%s: %s\r\n", "Cycling Calendar", calendarName)
+	ics += fmt.Sprintf("X-WR-CALDESC:%s: %s\r\n", "Cycling Calendar", calendarName)
+	ics += "REFRESH-INTERVAL;VALUE=DURATION:PT1H\r\n"
 
 	// Loop over each event and generate the calendar content
-	for _, event := range events {
-		summary := event.Title
-		description := event.Stage
+	for i, event := range events {
+		summary := fmt.Sprintf("%s | %s", event.Title, event.Stage)
+
+		// Build description with race info if available
+		descriptionLines := buildEventDescription(event, i < len(raceInfoList) && raceInfoList[i] != nil, raceInfoList, i)
+
+		// Convert description lines to ICS format with literal \n
+		var descriptionBuilder strings.Builder
+		for _, line := range descriptionLines {
+			if line == "" {
+				// Empty line becomes literal \n
+				descriptionBuilder.WriteString("\\n")
+			} else {
+				// Escape the line content and add literal \n
+				descriptionBuilder.WriteString(escapeICSText(line))
+				descriptionBuilder.WriteString("\\n")
+			}
+		}
+		description := descriptionBuilder.String()
 
 		// Parse the start and end times in the given time zone
 		startDateTime, err := parseDateTime(event.StartTime, event.Date)
@@ -116,19 +237,19 @@ func GenerateICS(events []types.Event, calendarName string) string {
 			Str("end", end.String()).
 			Msg("Event processed for ICS generation")
 
-		// Add event details to ICS string
-		ics += "BEGIN:VEVENT\n"
-		ics += fmt.Sprintf("UID:%s%s\n", event.Title, event.Stage)
-		ics += fmt.Sprintf("DTSTART:%s\n", start.Format("20060102T150405Z"))
-		ics += fmt.Sprintf("DTEND:%s\n", end.Format("20060102T150405Z"))
-		ics += fmt.Sprintf("SUMMARY:%s\n", summary)
-		ics += fmt.Sprintf("DESCRIPTION:%s\n", description)
-		ics += fmt.Sprintf("URL:%s\n", event.Link)
-		ics += "END:VEVENT\n"
+		// Add event details to ICS string with proper CRLF line endings
+		ics += "BEGIN:VEVENT\r\n"
+		ics += fmt.Sprintf("UID:%s%s\r\n", event.Title, event.Stage)
+		ics += fmt.Sprintf("DTSTART:%s\r\n", start.Format("20060102T150405Z"))
+		ics += fmt.Sprintf("DTEND:%s\r\n", end.Format("20060102T150405Z"))
+		ics += fmt.Sprintf("SUMMARY:%s\r\n", summary)
+		ics += foldICSLine(fmt.Sprintf("DESCRIPTION:%s", description))
+		ics += fmt.Sprintf("URL:%s\r\n", event.Link)
+		ics += "END:VEVENT\r\n"
 	}
 
 	// Close the VCALENDAR block
-	ics += "END:VCALENDAR\n"
+	ics += "END:VCALENDAR\r\n"
 
 	// Log the successful generation of the ICS content
 	logger.Log.Info().

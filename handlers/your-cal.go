@@ -4,6 +4,7 @@ import (
 	"cpe/calendar/ical"
 	"cpe/calendar/logger"
 	"cpe/calendar/request"
+	"cpe/calendar/service"
 	"cpe/calendar/types"
 	"net/http"
 	"os"
@@ -39,7 +40,7 @@ func Health(w http.ResponseWriter, r *http.Request) {
 }
 
 // GenerateICSHandler generates the ICS file and sends it in the response with a given filename
-func GenerateICSHandler(w http.ResponseWriter, r *http.Request) {
+func GenerateICSHandler(w http.ResponseWriter, r *http.Request, raceInfoService *service.RaceInfoService) {
 	// Get start and end times from environment variables
 	timezone := os.Getenv("TIMEZONE")
 
@@ -124,13 +125,45 @@ func GenerateICSHandler(w http.ResponseWriter, r *http.Request) {
 		Int("filteredEventsCount", len(filteredEvents)).
 		Msg("Filtered allowed events")
 
+	// Generate RaceInfo for each filtered event
+	raceInfoList := generateRaceInfoList(filteredEvents, raceInfoService)
+
+	logger.Log.Info().
+		Int("raceInfoCount", len(raceInfoList)).
+		Msg("Generated race info list")
+
 	// Generate the iCal file
-	icsContent := ical.GenerateICS(filteredEvents, calendarName)
+	icsContent := ical.GenerateICS(filteredEvents, calendarName, raceInfoList)
 
 	// Set headers and write content
 	w.Header().Set("Content-Type", "text/calendar")
 	w.Header().Set("Content-Disposition", "attachment; filename=\""+filename+"\"")
 	w.Write([]byte(icsContent))
+}
+
+// generateRaceInfoList fetches race information for a list of events
+func generateRaceInfoList(events []types.Event, raceInfoService *service.RaceInfoService) []*types.RaceInfo {
+	var raceInfoList []*types.RaceInfo
+	for _, event := range events {
+		if event.Link != "" {
+			raceInfo, err := raceInfoService.GetRaceInfo(event.Link, service.FetchRaceInfo)
+			if err != nil {
+				logger.Log.Warn().
+					Err(err).
+					Str("eventTitle", event.Title).
+					Str("eventLink", event.Link).
+					Msg("Failed to fetch race info for event")
+				// Continue with nil race info for this event
+				raceInfoList = append(raceInfoList, nil)
+			} else {
+				raceInfoList = append(raceInfoList, raceInfo)
+			}
+		} else {
+			// No link available, append nil
+			raceInfoList = append(raceInfoList, nil)
+		}
+	}
+	return raceInfoList
 }
 
 func contains(slice []string, item string) bool {
