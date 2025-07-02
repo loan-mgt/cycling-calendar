@@ -83,7 +83,7 @@ func main() {
 
 	// Start HTTP server and log any errors that occur
 	logger.Log.Info().Msg("Starting server on :8080")
-	err := http.ListenAndServe(":8081", r)
+	err := http.ListenAndServe(":8080", r)
 	if err != nil {
 		// Log any errors that occur while starting the server
 		logger.Log.Fatal().Err(err).Msg("Error starting server")
