@@ -124,32 +124,14 @@ func foldICSLine(line string) string {
 	}
 
 	var result strings.Builder
-	remaining := line
+	result.WriteString(line[:75] + "\r\n")
 
-	// First line can use full 75 characters
-	if len(remaining) > 75 {
-		result.WriteString(remaining[:75])
-		result.WriteString("\r\n")
-		remaining = remaining[75:]
-	} else {
-		result.WriteString(remaining)
-		result.WriteString("\r\n")
-		return result.String()
-	}
-
-	// Subsequent lines start with a space and can use 74 characters (75 - 1 for space)
-	for len(remaining) > 0 {
-		if len(remaining) > 74 {
-			result.WriteString(" ")
-			result.WriteString(remaining[:74])
-			result.WriteString("\r\n")
-			remaining = remaining[74:]
-		} else {
-			result.WriteString(" ")
-			result.WriteString(remaining)
-			result.WriteString("\r\n")
-			break
+	for i := 75; i < len(line); i += 74 {
+		end := i + 74
+		if end > len(line) {
+			end = len(line)
 		}
+		result.WriteString(" " + line[i:end] + "\r\n")
 	}
 
 	return result.String()
