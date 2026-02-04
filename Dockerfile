@@ -6,7 +6,10 @@ ENV CGO_ENABLED=0
 # Create a working directory
 WORKDIR /app
 
-# Copy the Go modules and download dependencies
+# Install git and other build tools
+RUN apk add --no-cache git ca-certificates
+
+# Copy Go modules and download dependencies
 COPY go.mod go.sum ./
 RUN go mod download
 

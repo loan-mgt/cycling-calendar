@@ -4,7 +4,7 @@ import (
 	"cpe/calendar/handlers"
 	"cpe/calendar/logger"
 	"cpe/calendar/metrics"
-	"cpe/calendar/service"
+
 	"html/template"
 	"net/http"
 	"os"
@@ -41,9 +41,6 @@ func init() {
 }
 
 func main() {
-	// Initialize RaceInfoService
-	raceInfoService := service.NewRaceInfoService()
-
 	// Set up graceful shutdown
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
@@ -51,8 +48,7 @@ func main() {
 	// Shutdown goroutine
 	go func() {
 		<-sigChan
-		logger.Log.Info().Msg("Shutting down RaceInfoService...")
-		raceInfoService.Stop()
+		logger.Log.Info().Msg("Shutting down gracefully...")
 		os.Exit(0)
 	}()
 
@@ -66,10 +62,8 @@ func main() {
 	// Serve static files like JavaScript, CSS, images, etc.
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
 
-	// Serve calendar.ics route - pass raceInfoService to handler
-	r.HandleFunc("/cycling-calendar.ics", func(w http.ResponseWriter, r *http.Request) {
-		handlers.GenerateICSHandler(w, r, raceInfoService)
-	}).Methods("GET")
+	// Serve calendar.ics route - use Tiz handler
+	r.HandleFunc("/cycling-calendar.ics", handlers.GenerateTizICSHandler).Methods("GET")
 
 	r.HandleFunc("/robots.txt", serveRobots).Methods("GET")
 
@@ -85,7 +79,7 @@ func main() {
 	logger.Log.Info().Msg("Starting server on :8080")
 	err := http.ListenAndServe(":8080", r)
 	if err != nil {
-		// Log any errors that occur while starting the server
+		// Log any errors that occur while starting server
 		logger.Log.Fatal().Err(err).Msg("Error starting server")
 	}
 }

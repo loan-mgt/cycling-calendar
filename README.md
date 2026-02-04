@@ -18,7 +18,16 @@ Get the estimated end time of each cycling race directly in your calendar!
 
 # Usage
 
-Warning the info is base on 'https://www.procyclingstats.com/races.php?timezone=fr&filter=Filter&p=uci&s=start-finish-schedule'
+The info is based on 'https://cyclingtiz.live/'. The data is cached for 24 hours to reduce load on the source.
+
+Supported categories include:
+- **ME**: Men Elite
+- **WE**: Women Elite
+- **Track**: Track Cycling
+- **MTB**: Mountain Biking
+- **NC**: National Championships
+- **WC**: World Championships
+- **JR**: Junior
 
 # Development
 

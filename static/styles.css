@@ -309,7 +309,6 @@ li .btn-secondary {
 
 .chips {
     display: flex;
-    flex-direction: column;
     flex-wrap: wrap;
     gap: 0.5rem;
     margin-top: 1rem;

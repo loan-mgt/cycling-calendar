@@ -41,7 +41,7 @@
                     <a href="https://github.com/loan-mgt/cycling-calendar">Source Code</a>
                 </li>
             </ul>
-        </nav> 
+        </nav>
     </header>
 
     <main>
@@ -57,7 +57,7 @@
             </button>
             <div class="chips" id="chips-container">
             </div>
-            <p ><a class="light" href="/uci-classification-guide">What do these categories mean?</a></p>
+            <p><a class="light" href="/uci-classification-guide">What do these categories mean?</a></p>
 
 
         </section>
@@ -86,35 +86,37 @@
             <div class="guides">
 
 
-            <div>
-                <h3>iOS Setup</h3>
-                <ol>
-                    <li>Open the <strong>Calendar</strong> app on your iPhone.</li>
-                    <li>Tap <strong>Calendars</strong> at the bottom of the screen.</li>
-                    <li>Tap <strong>Add Calendar</strong> &rarr; <strong>Add Subscription Calendar</strong>.</li>
-                    <li>Enter the calendar URL and tap <strong>Subscribe</strong>.</li>
-                </ol>
-                <p>
-                    Source: <a class="underline"
-                        href="https://support.apple.com/en-au/guide/iphone/iph3d1110d4/ios#:~:text=Tap%20Calendars%20at%20the%20bottom,enter%20the%20URL%20of%20the%20."
-                        target="_blank" rel="noopener">Apple Support</a>
-                </p>
-            </div>
+                <div>
+                    <h3>iOS Setup</h3>
+                    <ol>
+                        <li>Open the <strong>Calendar</strong> app on your iPhone.</li>
+                        <li>Tap <strong>Calendars</strong> at the bottom of the screen.</li>
+                        <li>Tap <strong>Add Calendar</strong> &rarr; <strong>Add Subscription Calendar</strong>.</li>
+                        <li>Enter the calendar URL and tap <strong>Subscribe</strong>.</li>
+                    </ol>
+                    <p>
+                        Source: <a class="underline"
+                            href="https://support.apple.com/en-au/guide/iphone/iph3d1110d4/ios#:~:text=Tap%20Calendars%20at%20the%20bottom,enter%20the%20URL%20of%20the%20."
+                            target="_blank" rel="noopener">Apple Support</a>
+                    </p>
+                </div>
 
-            <div>
-                <h3>Android Setup (Google Calendar)</h3>
-                <ol>
-                    <li>Open <a href="https://calendar.google.com" target="_blank" rel="noopener">Google Calendar</a> on
-                        your computer.</li>
-                    <li>On the left, click the <strong>+</strong> next to "Other calendars".</li>
-                    <li>Select <strong>From URL</strong>.</li>
-                    <li>Enter the calendar URL and click <strong>Add calendar</strong>.</li>
-                </ol>
-                <p>
-                    Source: <a class="underline" href="https://support.google.com/calendar/answer/37100?hl=en&co=GENIE.Platform%3DDesktop"
-                        target="_blank" rel="noopener">Google Support</a>
-                </p>
-            </div>
+                <div>
+                    <h3>Android Setup (Google Calendar)</h3>
+                    <ol>
+                        <li>Open <a href="https://calendar.google.com" target="_blank" rel="noopener">Google
+                                Calendar</a> on
+                            your computer.</li>
+                        <li>On the left, click the <strong>+</strong> next to "Other calendars".</li>
+                        <li>Select <strong>From URL</strong>.</li>
+                        <li>Enter the calendar URL and click <strong>Add calendar</strong>.</li>
+                    </ol>
+                    <p>
+                        Source: <a class="underline"
+                            href="https://support.google.com/calendar/answer/37100?hl=en&co=GENIE.Platform%3DDesktop"
+                            target="_blank" rel="noopener">Google Support</a>
+                    </p>
+                </div>
 
             </div>
 
@@ -142,25 +144,13 @@
     <script src="/static/encryption.js"></script>
     <script>
         const cat = [
-            // Road racing
-            "1.UWT",
-            "1.WWT",
-            "2.UWT",
-            "2.WWT",
-            "1.Pro",
-            "2.Pro",
-            "1.1",
-            "2.1",
-            "1.2",
-            "2.2",
-            "1.2U",
-            "2.2U",
-            "1.Ncup",
-            "2.Ncup",
-            // Cyclo-cross & Championships
-            "CC",
-            "JR",
+            // Tiz cycling categories
+            "ME",
+            "WE",
+            "track",
+            "MTB",
             "NC",
+            "JR",
             "WC",
         ];
         // Load selected categories from localStorage or use defaults
@@ -170,10 +160,10 @@
             try {
                 selected = JSON.parse(stored);
             } catch (e) {
-                selected = ["1.UWT", "2.UWT", "1.WWT", "2.WWT"];
+                selected = ["ME", "WE"];
             }
         } else {
-            selected = ["1.UWT", "2.UWT", "1.WWT", "2.WWT"];
+            selected = ["ME", "WE"];
         }
         let url = window.location.origin + "/cycling-calendar.ics";
 
