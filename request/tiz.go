@@ -625,3 +625,50 @@ func getAttribute(n *html.Node, attrName string) string {
 	}
 	return ""
 }
+
+func extractText(n *html.Node) (text, link string) {
+	if n.Type == html.TextNode {
+		// Preserve whitespace for accurate date parsing
+		return n.Data, href(n)
+	}
+	buf := ""
+	link = href(n)
+
+	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		buf2, link2 := extractText(c)
+		buf += buf2
+		link += link2
+	}
+
+	// We only trim the final result, not intermediate steps to avoid merging words
+	return strings.TrimSpace(buf), link
+}
+
+func href(n *html.Node) string {
+	if n.Type == html.ElementNode && n.Data == "a" {
+		for _, attr := range n.Attr {
+			if attr.Key == "href" {
+				return attr.Val
+			}
+		}
+	}
+
+	return ""
+}
+
+func findNode(n *html.Node, predicate func(*html.Node) bool) *html.Node {
+	if n == nil {
+		return nil
+	}
+	if predicate(n) {
+		return n
+	}
+
+	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		if found := findNode(c, predicate); found != nil {
+			return found
+		}
+	}
+
+	return nil
+}
