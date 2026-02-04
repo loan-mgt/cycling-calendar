@@ -270,6 +270,11 @@ func parseRaceFromLi(li *html.Node, sectionDate string) (types.TizRace, error) {
 	// Parse name and stage
 	race.Name, race.Stage = parseNameAndStage(text)
 
+	// Final cleanup and defaults
+	if race.EndDate == "" && race.StartDate != "" {
+		race.EndDate = race.StartDate
+	}
+
 	return race, nil
 }
 
@@ -353,13 +358,13 @@ func parseDatesFromText(text string) (startDate, endDate string) {
 
 	// Pattern for multi-day: "for 3 days", "for 5 days"
 	durationPattern := regexp.MustCompile(`for\s+(\d+)\s+days?`)
-	durationMatch := durationPattern.FindString(text)
+	durationSubmatch := durationPattern.FindStringSubmatch(text)
 
-	if durationMatch != "" && startDate != "" {
-		durationDays, _ := strconv.Atoi(durationMatch)
+	if len(durationSubmatch) > 1 && startDate != "" {
+		durationDays, _ := strconv.Atoi(durationSubmatch[1])
 		if durationDays > 0 {
 			startTime, _ := time.Parse("2006-01-02", startDate)
-			endTime := startTime.AddDate(0, 0, durationDays-1)
+			endTime := startTime.AddDate(0, 0, durationDays)
 			endDate = endTime.Format("2006-01-02")
 		}
 	}
@@ -580,6 +585,10 @@ func parseNameAndStage(text string) (name, stage string) {
 	// Remove categories (WE, ME, etc.) anywhere in the name if in parentheses
 	// We matched (WE, ME), (WE), (ME), etc.
 	re = regexp.MustCompile(`\s*\((?:WE|ME|track|MTB|NC|JR|WC|Elite|Women Elite|Men Elite|Women|Men)(?:,\s*(?:WE|ME|track|MTB|NC|JR|WC|Elite|Women Elite|Men Elite|Women|Men))*\)\s*`)
+	name = re.ReplaceAllString(name, "")
+
+	// Remove TBA mentions
+	re = regexp.MustCompile(`\s*-\s*times?\s+TBA\s*`)
 	name = re.ReplaceAllString(name, "")
 
 	// Remove trailing dashes and spaces

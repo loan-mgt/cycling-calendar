@@ -69,11 +69,11 @@ func GenerateTizICS(events []types.Event, calendarName string) string {
 			}
 			end, err = parseTizDateOnly(event.EndDate, currentYear)
 			if err != nil {
-				logger.Log.Error().
+				logger.Log.Warn().
 					Err(err).
 					Str("endDate", event.EndDate).
-					Msg("Error parsing end date")
-				continue
+					Msg("Error parsing end date, defaulting to start date")
+				end = start
 			}
 
 			// Use date-only format
